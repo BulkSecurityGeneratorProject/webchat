@@ -22,7 +22,8 @@ logging:
 spring:
     redis:
       host: localhost
-      port: 6378
+      port: 6379
+      password: webchat
     devtools:
         restart:
             enabled: false
