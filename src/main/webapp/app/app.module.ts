@@ -1,11 +1,9 @@
 import './vendor.ts';
-
 import { NgModule, Injector } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { Ng2Webstorage, LocalStorageService, SessionStorageService  } from 'ngx-webstorage';
 import { JhiEventManager } from 'ng-jhipster';
-
 import { AuthInterceptor } from './blocks/interceptor/auth.interceptor';
 import { AuthExpiredInterceptor } from './blocks/interceptor/auth-expired.interceptor';
 import { ErrorHandlerInterceptor } from './blocks/interceptor/errorhandler.interceptor';
@@ -27,6 +25,7 @@ import {
     ActiveMenuDirective,
     ErrorComponent
 } from './layouts';
+import {WebchatModule} from './webchat/webchat.module';
 
 @NgModule({
     imports: [
@@ -38,6 +37,7 @@ import {
         WebchatAdminModule,
         WebchatAccountModule,
         WebchatEntityModule,
+        WebchatModule
         // jhipster-needle-angular-add-module JHipster will add new module here
     ],
     declarations: [

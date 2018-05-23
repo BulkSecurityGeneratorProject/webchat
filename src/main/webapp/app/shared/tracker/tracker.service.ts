@@ -20,6 +20,18 @@ export class JhiTrackerService {
     alreadyConnectedOnce = false;
     private subscription: Subscription;
 
+    //Websocket Chat variables
+    chatSubscriber = null;
+    chatListener: Observable<any>;
+    chatListenerObserver: Observer<any>;
+
+
+    //Websocket User variables
+    userSubscriber = null;
+    userListener: Observable<any>;
+    userListenerObserver: Observer<any>;
+
+
     constructor(
         private router: Router,
         private authServerProvider: AuthServerProvider,
@@ -29,6 +41,8 @@ export class JhiTrackerService {
     ) {
         this.connection = this.createConnection();
         this.listener = this.createListener();
+        this.chatListener = this.createChatListener();
+        this.userListener = this.createUserListener();
     }
 
     connect() {
@@ -38,7 +52,7 @@ export class JhiTrackerService {
         // building absolute path so that websocket doesn't fail when deploying with a context path
         const loc = this.$window.nativeWindow.location;
         let url;
-        url = '//' + loc.host + loc.pathname + 'websocket/tracker';
+        url = '//' + loc.host + loc.pathname + 'websocket';
         const authToken = this.authServerProvider.getToken();
         if (authToken) {
             url += '?access_token=' + authToken;
@@ -77,10 +91,18 @@ export class JhiTrackerService {
         return this.listener;
     }
 
+    receiveChatMsg() {
+        return this.chatListener;
+    }
+
+    receiveUser() {
+        return this.userListener;
+    }
+
     sendActivity() {
         if (this.stompClient !== null && this.stompClient.connected) {
             this.stompClient.send(
-                '/topic/activity', // destination
+                '/wsadmin/activity', // destination
                 JSON.stringify({'page': this.router.routerState.snapshot.url}), // body
                 {} // header
             );
@@ -89,7 +111,7 @@ export class JhiTrackerService {
 
     subscribe() {
         this.connection.then(() => {
-            this.subscriber = this.stompClient.subscribe('/topic/tracker', (data) => {
+            this.subscriber = this.stompClient.subscribe('/wsadmin/tracker', (data) => {
                 this.listenerObserver.next(JSON.parse(data.body));
             });
         });
@@ -111,4 +133,83 @@ export class JhiTrackerService {
     private createConnection(): Promise<any> {
         return new Promise((resolve, reject) => this.connectedPromise = resolve);
     }
+
+    //Websocket
+    private createChatListener(): Observable<any> {
+        return new Observable((observer) => {
+            this.chatListenerObserver = observer;
+            this.subscribeChat();
+        });
+    }
+
+    subscribeChat() {
+        this.connection.then(() => {
+            this.chatSubscriber = this.stompClient.subscribe('/ws/chat', (data) => {
+                this.chatListenerObserver.next(JSON.parse(data.body));
+            });
+        });
+    }
+
+    unsubscribeChat() {
+        if (this.subscriber !== null) {
+            this.subscriber.unsubscribe();
+        }
+        this.chatListener = this.createChatListener();
+    }
+
+    //User Subscription
+    private createUserListener(): Observable<any> {
+        return new Observable((observer) => {
+            this.userListenerObserver = observer;
+            this.subscribeUser();
+        });
+    }
+
+    subscribeUser() {
+        this.connection.then(() => {
+            this.userSubscriber = this.stompClient.subscribe('/user/ws/chat', (data) => {
+                this.userListenerObserver.next(JSON.parse(data.body));
+            })
+            setTimeout(()=>{ this.getOnlineUsers() }, 1)
+        });
+    }
+
+    unsubscribeUser() {
+        if (this.userSubscriber !== null) {
+            this.userSubscriber.unsubscribe();
+        }
+        this.userListener = this.createUserListener();
+    }
+
+    //Actions
+    sendMessageToAll(msg: String) {
+        if (this.stompClient !== null && this.stompClient.connected) {
+            this.stompClient.send(
+                '/ws/sendmessage', // destination
+                JSON.stringify({'payload': msg}), // body
+                {} // header
+            );
+        }
+    }
+
+
+    //Actions
+    sendMessageToUser(toUser: string, payload:string) {
+        if (this.stompClient !== null && this.stompClient.connected) {
+            this.stompClient.send(
+                '/ws/sendmessagetouser', // destination
+                JSON.stringify({'toUser': toUser, 'payload': payload}), // body
+                {} // header
+            );
+        }
+    }
+
+    getOnlineUsers() {
+        if (this.stompClient !== null && this.stompClient.connected) {
+            this.stompClient.send(
+                '/ws/onlineusers'
+            );
+        }
+    }
+
 }

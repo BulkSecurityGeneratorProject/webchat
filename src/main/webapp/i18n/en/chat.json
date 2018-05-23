@@ -1,0 +1,14 @@
+{
+  "chat": {
+    "chat": "Chat",
+    "privatechat": "Private Chat",
+    "main": "hatPage",
+    "sendhello": "Send Hello",
+    "send": "Send!",
+    "sendprivate": "Send Private",
+    "payload": "Text",
+    "onlineusers": "Online Users",
+    "from": "From"
+
+  }
+}

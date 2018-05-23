@@ -41,13 +41,14 @@ public class WebsocketConfiguration extends AbstractWebSocketMessageBrokerConfig
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
+
+        config.enableSimpleBroker("/ws", "/wsadmin");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         String[] allowedOrigins = Optional.ofNullable(jHipsterProperties.getCors().getAllowedOrigins()).map(origins -> origins.toArray(new String[0])).orElse(new String[0]);
-        registry.addEndpoint("/websocket/tracker")
+        registry.addEndpoint("/websocket")
             .setHandshakeHandler(defaultHandshakeHandler())
             .setAllowedOrigins(allowedOrigins)
             .withSockJS()
@@ -60,6 +61,12 @@ public class WebsocketConfiguration extends AbstractWebSocketMessageBrokerConfig
 
             @Override
             public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
+
+                //Deny unauthenticated connections
+                if(attributes.get("anonymous") != null && attributes.get("anonymous").equals(true)){
+                    return false;
+                }
+
                 if (request instanceof ServletServerHttpRequest) {
                     ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
                     attributes.put(IP_ADDRESS, servletRequest.getRemoteAddress());
@@ -83,6 +90,7 @@ public class WebsocketConfiguration extends AbstractWebSocketMessageBrokerConfig
                     Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
                     authorities.add(new SimpleGrantedAuthority(AuthoritiesConstants.ANONYMOUS));
                     principal = new AnonymousAuthenticationToken("WebsocketConfiguration", "anonymous", authorities);
+                    attributes.put("anonymous", true);
                 }
                 return principal;
             }
