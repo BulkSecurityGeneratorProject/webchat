@@ -1,7 +1,6 @@
 package com.rassul.webchat.web.rest;
 
 import com.rassul.webchat.WebchatApp;
-import com.rassul.webchat.config.CacheConfiguration;
 import com.rassul.webchat.domain.Authority;
 import com.rassul.webchat.domain.User;
 import com.rassul.webchat.repository.UserRepository;

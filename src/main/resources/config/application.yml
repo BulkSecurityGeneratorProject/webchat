@@ -24,7 +24,13 @@ management:
     health:
         mail:
             enabled: false # When using the MailService, configure an SMTP server and set this to true
+
 spring:
+    cache:
+        type: redis
+    redis:
+      host: localhost
+      port: 6379
     application:
         name: webchat
     profiles:

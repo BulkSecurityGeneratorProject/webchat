@@ -36,6 +36,14 @@
     "languages": [
       "en",
       "ru"
-    ]
+    ],
+    "appsFolders": [
+      "jhipster"
+    ],
+    "directoryPath": "../",
+    "dockerRepositoryName": "webchat",
+    "dockerPushCommand": "docker push",
+    "kubernetesNamespace": "default",
+    "kubernetesServiceType": "LoadBalancer"
   }
 }

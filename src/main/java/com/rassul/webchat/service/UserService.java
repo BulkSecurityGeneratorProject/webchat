@@ -1,6 +1,5 @@
 package com.rassul.webchat.service;
 
-import com.rassul.webchat.config.CacheConfiguration;
 import com.rassul.webchat.domain.Authority;
 import com.rassul.webchat.domain.User;
 import com.rassul.webchat.repository.AuthorityRepository;
@@ -59,6 +58,7 @@ public class UserService {
                 user.setActivationKey(null);
                 cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).evict(user.getLogin());
                 cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE).evict(user.getEmail());
+                cacheManager.getCache(UserRepository.USERS_CACHE).evict(user.getId());
                 log.debug("Activated user: {}", user);
                 return user;
             });
@@ -75,6 +75,7 @@ public class UserService {
                 user.setResetDate(null);
                 cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).evict(user.getLogin());
                 cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE).evict(user.getEmail());
+                cacheManager.getCache(UserRepository.USERS_CACHE).evict(user.getId());
                 return user;
            });
     }
@@ -87,6 +88,7 @@ public class UserService {
                 user.setResetDate(Instant.now());
                 cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).evict(user.getLogin());
                 cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE).evict(user.getEmail());
+                cacheManager.getCache(UserRepository.USERS_CACHE).evict(user.getId());
                 return user;
             });
     }
@@ -114,6 +116,7 @@ public class UserService {
         userRepository.save(newUser);
         cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).evict(newUser.getLogin());
         cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE).evict(newUser.getEmail());
+        cacheManager.getCache(UserRepository.USERS_CACHE).evict(newUser.getId());
         log.debug("Created Information for User: {}", newUser);
         return newUser;
     }
@@ -144,6 +147,7 @@ public class UserService {
         userRepository.save(user);
         cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).evict(user.getLogin());
         cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE).evict(user.getEmail());
+        cacheManager.getCache(UserRepository.USERS_CACHE).evict(user.getId());
         log.debug("Created Information for User: {}", user);
         return user;
     }
@@ -168,6 +172,7 @@ public class UserService {
                 user.setImageUrl(imageUrl);
                 cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).evict(user.getLogin());
                 cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE).evict(user.getEmail());
+                cacheManager.getCache(UserRepository.USERS_CACHE).evict(user.getId());
                 log.debug("Changed Information for User: {}", user);
             });
     }
@@ -196,6 +201,7 @@ public class UserService {
                     .forEach(managedAuthorities::add);
                 cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).evict(user.getLogin());
                 cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE).evict(user.getEmail());
+                cacheManager.getCache(UserRepository.USERS_CACHE).evict(user.getId());
                 log.debug("Changed Information for User: {}", user);
                 return user;
             })
@@ -207,6 +213,7 @@ public class UserService {
             userRepository.delete(user);
             cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).evict(user.getLogin());
             cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE).evict(user.getEmail());
+            cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE).evict(user.getId());
             log.debug("Deleted User: {}", user);
         });
     }
@@ -219,6 +226,7 @@ public class UserService {
                 user.setPassword(encryptedPassword);
                 cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).evict(user.getLogin());
                 cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE).evict(user.getEmail());
+                cacheManager.getCache(UserRepository.USERS_CACHE).evict(user.getId());
                 log.debug("Changed password for User: {}", user);
             });
     }
@@ -256,6 +264,7 @@ public class UserService {
             userRepository.delete(user);
             cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE).evict(user.getLogin());
             cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE).evict(user.getEmail());
+            cacheManager.getCache(UserRepository.USERS_CACHE).evict(user.getId());
         }
     }
 
